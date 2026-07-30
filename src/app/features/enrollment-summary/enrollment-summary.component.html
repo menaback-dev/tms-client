@@ -1,0 +1,21 @@
+<div class="summary-card">
+  <h3>Dashboard Summary</h3>
+
+  @if (store.isLoading()) {
+    <p>Loading summary...</p>
+  } @else {
+    <p>
+      Pending Enrollments:
+      <strong>{{ store.pendingCount() }}</strong>
+    </p>
+
+    <p>
+      Total Enrollments:
+      <strong>{{ store.entities().length }}</strong>
+    </p>
+  }
+
+  @if (store.error()) {
+    <p class="error">{{ store.error() }}</p>
+  }
+</div>
