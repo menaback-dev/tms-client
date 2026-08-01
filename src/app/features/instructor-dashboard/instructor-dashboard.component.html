@@ -1,0 +1,25 @@
+<div class="dashboard-header">
+  <h1>Instructor Command Center</h1>
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <span class="kpi-value">{{ store.entities().length }}</span>
+      <span class="kpi-label">Total Enrollments</span>
+    </div>
+    <div class="kpi-card pending">
+      <span class="kpi-value">{{ store.pendingCount() }}</span>
+      <span class="kpi-label">Pending Approval</span>
+    </div>
+  </div>
+</div>
+
+<div class="chart-section">
+  @defer (on viewport; prefetch on idle(500)) {
+    <tms-analytics-chart [data]="store.entities()" />
+  } @placeholder {
+    <div class="skeleton-chart">Scroll down to view analytics...</div>
+  } @loading (minimum 500ms) {
+    <div class="spinner">Downloading chart engine...</div>
+  } @error {
+    <p>Failed to load chart. Check your connection.</p>
+  }
+</div>
