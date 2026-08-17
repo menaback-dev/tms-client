@@ -1,23 +1,24 @@
-import { Service, inject } from '@angular/core';
+import { Injectable, Service, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map } from "rxjs/operators";
+import { environment } from '../../environments/environment';
 import { Course, CourseDetail, PagedResponse } from "../models/course.model";
 
 
 
-@Service()
+@Injectable({ providedIn: 'root' })
 export class CourseService {
-    private  http = inject(HttpClient);
-    private baseUrl = "http://localhost:5013/api/courses";
+    private http = inject(HttpClient);
+    private readonly base = `${environment.apiUrl}/courses`;
 
-    getAll(page=1, pageSize=50) {
+    getAll() {
         return this.http
-            .get<PagedResponse<Course>>(this.baseUrl,{
-                params: { page: page.toString(), pageSize: pageSize.toString()},
-            })
-            .pipe(map((p) => p.items));
+        .get<PagedResponse<Course>>(this.base, {
+            params: { page: '1', pageSize: '50' },
+        })
+        .pipe(map((response) => response.items));
     }
     getById(id: string) {
-        return this.http.get<CourseDetail>(`${this.baseUrl}/${id}`);
+        return this.http.get<CourseDetail>(`${this.base}/${id}`);
     }
 }

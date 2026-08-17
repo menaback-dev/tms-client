@@ -7,6 +7,7 @@ export interface Course {
   title: string;
   maxCapacity: number;
   enrollmentCount: number;
+  status?: string;
 }
 
 /** Envelope for GET /api/courses */
