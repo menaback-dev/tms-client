@@ -1,0 +1,34 @@
+<div class="login-page">
+  <form class="login-card" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <h1>TMS Login</h1>
+    <p class="subtitle">Sign in to continue</p>
+
+    <label>
+      Email
+      <input type="email" formControlName="email" autocomplete="username" />
+    </label>
+    @if (form.controls.email.touched && form.controls.email.invalid) {
+      <p class="field-error">Enter a valid email.</p>
+    }
+
+    <label>
+      Password
+      <input type="password" formControlName="password" autocomplete="current-password" />
+    </label>
+    @if (form.controls.password.touched && form.controls.password.invalid) {
+      <p class="field-error">Password is required.</p>
+    }
+
+    @if (error()) {
+      <p class="error">{{ error() }}</p>
+    }
+
+    <button type="submit" [disabled]="form.invalid || isSubmitting()">
+      {{ isSubmitting() ? 'Signing in…' : 'Sign in' }}
+    </button>
+    <p>
+        No Account ?
+        <a routerLink="/register">Register</a>
+    </p>
+  </form>
+</div>

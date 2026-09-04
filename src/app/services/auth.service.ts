@@ -10,8 +10,16 @@ export interface TmsUser {
 }
 
 export interface LoginRequest {
-  username: string;
+  email: string;
   password: string;
+}
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  role: string;
 }
 
 export interface AuthResponse {
@@ -47,7 +55,14 @@ export class AuthService {
         displayName: payload.name || 'User',
         role: payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || payload.role || 'Student'
     });
+ 
 }
+
+    async register(payload: RegisterRequest): Promise<void> {
+      await firstValueFrom(
+        this.http.post('/api/auth/register', payload)
+      );
+    }
     logout(): void {
         this.accessToken.set(null);
         this.currentUser.set(null);

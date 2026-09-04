@@ -4,6 +4,16 @@ import { roleGuard } from "./guards/role.guard";
 export const routes: Routes = [
 
     {
+    path: 'register',
+    loadComponent: () =>
+        import('./features/register/register.component').then((m) => m.RegisterComponent),
+    },
+    {
+    path: 'login',
+    loadComponent: () =>
+        import('./features/login/login.component').then((m) => m.LoginComponent),
+    },
+    {
     path: "courses/:id",
     loadComponent: () =>
       import("./features/course-detail/course-detail.component").then(
@@ -39,10 +49,25 @@ export const routes: Routes = [
         ),
     },
     {
+    path: 'student-dashboard',
+    loadComponent: () =>
+        import('./features/student-dashboard/student-dashboard.component').then(
+        (m) => m.StudentDashboardComponent
+        ),
+    },
+    {
     path: 'admin/courses',
-    component: AdminCourseListComponent,
+    loadComponent: () =>
+    import('./features/admin-course-list/admin-course-list.component')
+      .then(m => m.AdminCourseListComponent),
     canActivate: [roleGuard('Admin')]
     },
+    {
+    path: 'unauthorized',
+    loadComponent: () =>
+        import('./features/unauthorized/unauthorized.component')
+        .then(m => m.UnauthorizedComponent),
+    },
 
-    { path: "", redirectTo: "dashboard", pathMatch: "full" },
+    { path: "", redirectTo: "register", pathMatch: "full" },
     ];
