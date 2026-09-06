@@ -5,23 +5,33 @@ import { Enrollment } from '../../models/enrollment.model';
   selector: 'tms-analytics-chart',
   standalone: true,
   templateUrl: './analytics-chart.component.html',
-  styleUrl: './analytics-chart.component.scss',
 })
 export class AnalyticsChartComponent {
   data = input.required<Enrollment[]>();
 
-  approvedHeight = computed(() => {
-    const count = this.data().filter(e => e.status === 'Approved').length;
-    return Math.max(20, count * 3);
-  });
+  private maxBar = 160;
 
-  pendingHeight = computed(() => {
-    const count = this.data().filter(e => e.status === 'Pending').length;
-    return Math.max(20, count * 3);
-  });
+  approvedCount = computed(
+    () => this.data().filter((e) => e.status === 'Approved').length
+  );
+  pendingCount = computed(
+    () => this.data().filter((e) => e.status === 'Pending').length
+  );
+  rejectedCount = computed(
+    () => this.data().filter((e) => e.status === 'Rejected').length
+  );
 
-  rejectedHeight = computed(() => {
-    const count = this.data().filter(e => e.status === 'Rejected').length;
-    return Math.max(20, count * 3);
-  });
+  private scale(count: number): number {
+    const max = Math.max(
+      this.approvedCount(),
+      this.pendingCount(),
+      this.rejectedCount(),
+      1
+    );
+    return Math.max(24, (count / max) * this.maxBar);
+  }
+
+  approvedHeight = computed(() => this.scale(this.approvedCount()));
+  pendingHeight = computed(() => this.scale(this.pendingCount()));
+  rejectedHeight = computed(() => this.scale(this.rejectedCount()));
 }

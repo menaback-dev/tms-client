@@ -1,0 +1,57 @@
+<div class="relative min-h-screen overflow-hidden bg-base-100 text-neutral" data-theme="tms">
+  <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_rgba(5,150,105,0.15),_transparent_50%)]"></div>
+
+  <div class="navbar relative z-10 border-b border-white/30 bg-base-100/70 px-4 backdrop-blur-xl">
+    <div class="flex-1">
+      <a routerLink="/student/dashboard" class="btn btn-ghost btn-sm">← Dashboard</a>
+    </div>
+    <div class="text-sm font-semibold">My profile</div>
+  </div>
+
+  <main class="relative z-10 mx-auto max-w-2xl space-y-6 px-4 py-8">
+    <section class="rounded-3xl border border-white/50 bg-white/55 p-6 shadow-xl backdrop-blur-2xl">
+      <h1 class="text-2xl font-bold">{{ displayName() }}</h1>
+      <p class="mt-1 text-sm opacity-60">{{ email() }}</p>
+
+      <div class="mt-6 rounded-2xl border border-white/40 bg-white/60 p-4">
+        <p class="text-xs font-medium uppercase tracking-wide opacity-50">Registration number</p>
+        <p class="mt-1 font-mono text-lg font-semibold text-primary">
+          {{ registrationNumber() }}
+        </p>
+      </div>
+    </section>
+
+    <section class="rounded-3xl border border-white/50 bg-white/55 p-6 shadow-xl backdrop-blur-2xl">
+      <h2 class="text-lg font-semibold">My enrollments</h2>
+      <p class="mt-1 text-sm opacity-60">Courses you requested (Pending / Approved)</p>
+
+      @if (loading()) {
+        <div class="mt-6 flex justify-center py-8">
+          <span class="loading loading-spinner text-primary"></span>
+        </div>
+      } @else if (error()) {
+        <div class="alert alert-warning mt-4 text-sm">{{ error() }}</div>
+      } @else {
+        <ul class="mt-4 space-y-3">
+          @for (e of myEnrollments(); track e.id) {
+            <li class="flex items-center justify-between rounded-2xl border border-white/40 bg-white/60 px-4 py-3">
+              <div>
+                <p class="font-medium">{{ e.courseName || e.courseCode || 'Course' }}</p>
+                <p class="text-xs opacity-50">{{ e.courseCode }}</p>
+              </div>
+              <span
+                class="badge"
+                [class.badge-warning]="e.status === 'Pending'"
+                [class.badge-success]="e.status === 'Approved'"
+              >
+                {{ e.status }}
+              </span>
+            </li>
+          } @empty {
+            <p class="py-6 text-center text-sm opacity-60">No enrollment requests yet.</p>
+          }
+        </ul>
+      }
+    </section>
+  </main>
+</div>

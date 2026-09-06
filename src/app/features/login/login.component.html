@@ -1,34 +1,69 @@
-<div class="login-page">
-  <form class="login-card" [formGroup]="form" (ngSubmit)="onSubmit()">
-    <h1>TMS Login</h1>
-    <p class="subtitle">Sign in to continue</p>
+<div class="relative min-h-screen overflow-hidden bg-base-100" data-theme="tms">
+  <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(5,150,105,0.22),transparent_50%),radial-gradient(ellipse_at_bottom_right,rgba(217,119,6,0.16),transparent_45%)]"></div>
+  <div class="pointer-events-none absolute -left-20 top-20 h-72 w-72 rounded-full bg-primary/30 blur-3xl"></div>
+  <div class="pointer-events-none absolute -right-10 bottom-0 h-80 w-80 rounded-full bg-secondary/25 blur-3xl"></div>
 
-    <label>
-      Email
-      <input type="email" formControlName="email" autocomplete="username" />
-    </label>
-    @if (form.controls.email.touched && form.controls.email.invalid) {
-      <p class="field-error">Enter a valid email.</p>
-    }
+  <tms-site-navbar />
 
-    <label>
-      Password
-      <input type="password" formControlName="password" autocomplete="current-password" />
-    </label>
-    @if (form.controls.password.touched && form.controls.password.invalid) {
-      <p class="field-error">Password is required.</p>
-    }
+  <main class="relative mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 lg:grid-cols-2">
+    <section class="space-y-4">
+      <div class="badge badge-secondary badge-outline">TMS workspace</div>
+      <h1 class="text-4xl font-bold leading-tight text-neutral">
+        Train smarter.<br />
+        <span class="text-primary">Manage everything in one place.</span>
+      </h1>
+      <p class="max-w-md text-base-content/70">
+        Courses, enrollments, approvals, and instructor tools — built for modern training teams.
+      </p>
+    </section>
 
-    @if (error()) {
-      <p class="error">{{ error() }}</p>
-    }
+    <section class="justify-self-center lg:justify-self-end w-full max-w-md">
+      <div class="rounded-3xl border border-white/50 bg-white/55 p-8 shadow-2xl shadow-emerald-900/10 backdrop-blur-2xl">
+        <h2 class="text-2xl font-semibold">Sign in</h2>
+        <p class="mt-1 text-sm opacity-60">Email and password for your TMS account</p>
 
-    <button type="submit" [disabled]="form.invalid || isSubmitting()">
-      {{ isSubmitting() ? 'Signing in…' : 'Sign in' }}
-    </button>
-    <p>
-        No Account ?
-        <a routerLink="/register">Register</a>
-    </p>
-  </form>
+        <form class="mt-6 space-y-4" [formGroup]="form" (ngSubmit)="onSubmit()">
+          <label class="form-control w-full">
+            <div class="label py-1"><span class="label-text font-medium">Email</span></div>
+            <input
+              type="email"
+              formControlName="email"
+              class="input input-bordered w-full bg-white/70 backdrop-blur"
+              autocomplete="username"
+            />
+          </label>
+
+          <label class="form-control w-full">
+            <div class="label py-1"><span class="label-text font-medium">Password</span></div>
+            <input
+              type="password"
+              formControlName="password"
+              class="input input-bordered w-full bg-white/70 backdrop-blur"
+              autocomplete="current-password"
+            />
+          </label>
+
+          @if (error()) {
+            <div class="alert alert-error text-sm py-2">{{ error() }}</div>
+          }
+
+          <button
+            type="submit"
+            class="btn btn-primary w-full mt-6"
+            [disabled]="form.invalid || isSubmitting()"
+          >
+            @if (isSubmitting()) {
+              <span class="loading loading-spinner loading-sm"></span>
+            }
+            Sign in
+          </button>
+        </form>
+
+        <p class="mt-6 text-center text-sm opacity-70">
+          New here?
+          <a routerLink="/register" class="link link-secondary font-semibold">Create an account</a>
+        </p>
+      </div>
+    </section>
+  </main>
 </div>

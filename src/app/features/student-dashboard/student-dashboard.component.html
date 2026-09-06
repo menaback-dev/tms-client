@@ -1,38 +1,99 @@
-<div class="dashboard">
-<h1>Welcome, {{ studentName() }}</h1>
-  <p>Credits Earned: {{ earnedCredits() }}</p>
-  <p>Graduation Status: {{ graduationStatus() }}</p>
+<div class="relative min-h-screen overflow-hidden bg-base-100 text-neutral" data-theme="tms">
+  <!-- background (same language as auth pages) -->
+  <div
+    class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_rgba(5,150,105,0.18),_transparent_50%),radial-gradient(ellipse_at_bottom_right,_rgba(217,119,6,0.12),_transparent_45%)]"
+  ></div>
+  <div class="pointer-events-none absolute -left-20 top-24 h-72 w-72 rounded-full bg-primary/20 blur-3xl"></div>
+  <div class="pointer-events-none absolute -right-16 bottom-10 h-80 w-80 rounded-full bg-secondary/15 blur-3xl"></div>
 
-  <button (click)="registerForClass()">
-    Register for a Class (+3 credits)
-  </button>
-
-<h2>Course Catalog</h2>
-
-@if (coursesResource.isLoading()) {
-  <div class="spinner">Fetching courses from the server...</div>
-} @else if (coursesResource.error()) {
-  <div class="error">
-    Could not load courses. Make sure your .NET API is running.
+  <!-- top bar -->
+  <div class="navbar relative z-10 border-b border-white/30 bg-base-100/70 px-4 backdrop-blur-xl sm:px-8">
+    <div class="flex-1 gap-3">
+      <div
+        class="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary text-sm font-bold text-primary-content shadow-lg shadow-primary/30"
+      >
+        TMS
+      </div>
+      <div>
+        <div class="text-sm font-semibold">Training Management System</div>
+        <div class="text-xs opacity-60">Student workspace</div>
+      </div>
+    </div>
+    <div class="flex-none gap-2">
+      <a routerLink="/student/profile" class="btn btn-ghost btn-sm">Profile</a>
+      <button type="button" class="btn btn-ghost btn-sm" (click)="logout()">Sign out</button>
+    </div>
   </div>
-} @else {
-  <div class="grid">
-    @for (course of coursesResource.value()!; track course.id) {
-      <tms-course-card
-        [course]="course"
-        (enrollClicked)="handleEnroll($event)"
-      />
-    } @empty {
-      <p>No courses are available this term.</p>
-    }
-  </div>
-  <div class="layout">
-  <!-- Left side: list -->
-    <tms-enrollment-list />
 
-    <!-- Right side: summary -->
-    <tms-enrollment-summary />
-  </div>
-}
+  <main class="relative z-10 mx-auto max-w-6xl space-y-8 px-4 py-8 sm:px-6">
+    <!-- welcome glass panel -->
+    <section
+      class="rounded-3xl border border-white/50 bg-white/55 p-6 shadow-xl shadow-primary/5 backdrop-blur-2xl sm:p-8"
+    >
+      <div class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p class="badge badge-secondary badge-outline mb-3">Student dashboard</p>
+          <h1 class="text-3xl font-bold tracking-tight">
+            Welcome, {{ studentName() }}
+          </h1>
+          <p class="text-sm opacity-60">
+            ID:
+            <span class="font-mono text-primary">{{ registrationNumber() }}</span>
+          </p>
+          <p class="mt-2 text-sm opacity-70">
+            Track credits, graduation progress, and enroll in open courses.
+          </p>
+        </div>
 
+        <button class="btn btn-primary" (click)="registerForClass()">
+          Register for a Class (+3 credits)
+        </button>
+      </div>
+
+      <div class="mt-6 grid gap-4 sm:grid-cols-2">
+        <div class="rounded-2xl border border-white/40 bg-white/60 p-4 backdrop-blur">
+          <p class="text-xs font-medium uppercase tracking-wide opacity-50">Credits earned</p>
+          <p class="mt-1 text-3xl font-semibold text-primary">{{ earnedCredits() }}</p>
+        </div>
+        <div class="rounded-2xl border border-white/40 bg-white/60 p-4 backdrop-blur">
+          <p class="text-xs font-medium uppercase tracking-wide opacity-50">Graduation status</p>
+          <p class="mt-1 text-xl font-semibold">{{ graduationStatus() }}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- catalog -->
+    <section>
+      <div class="mb-4 flex items-center justify-between gap-3">
+        <h2 class="text-xl font-semibold">Course catalog</h2>
+        <span class="text-xs opacity-50">Live from TMS API</span>
+      </div>
+
+      @if (coursesLoading()) {
+        <div class="flex items-center justify-center gap-3 rounded-3xl border border-white/40 bg-white/50 py-16 backdrop-blur-xl">
+          <span class="loading loading-spinner loading-md text-primary"></span>
+          <span class="text-sm opacity-70">Fetching courses from the server…</span>
+        </div>
+      } @else if (coursesError()) {
+        <div class="alert alert-error shadow-lg">
+          <span>Could not load courses. Make sure your .NET API is running.</span>
+        </div>
+      } @else {
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          @for (course of courses(); track course.id) {
+            <tms-course-card [course]="course" (enrollClicked)="handleEnroll($event)" />
+          } @empty {
+            <p class="col-span-full text-center text-sm opacity-70">No courses are available this term.</p>
+          }
+        </div>
+      }
+
+      @if (enrollMessage()) {
+        <div class="alert alert-success text-sm">{{ enrollMessage() }}</div>
+      }
+      @if (enrollError()) {
+        <div class="alert alert-error text-sm">{{ enrollError() }}</div>
+      }
+    </section>
+  </main>
 </div>

@@ -28,7 +28,7 @@ export const routes: Routes = [
     },
 
     {
-    path: 'dashboard',
+    path: 'instructor/dashboard',
     loadComponent: () =>
         import('./features/instructor-dashboard/instructor-dashboard.component')
         .then(m => m.InstructorDashboardComponent),
@@ -49,24 +49,49 @@ export const routes: Routes = [
         ),
     },
     {
-    path: 'student-dashboard',
+    path: 'student/dashboard',
     loadComponent: () =>
         import('./features/student-dashboard/student-dashboard.component').then(
         (m) => m.StudentDashboardComponent
         ),
     },
     {
-    path: 'admin/courses',
-    loadComponent: () =>
-    import('./features/admin-course-list/admin-course-list.component')
-      .then(m => m.AdminCourseListComponent),
-    canActivate: [roleGuard('Admin')]
+    path: 'admin/dashboard',
+        loadComponent: () =>
+            import('./features/admin-dashboard/admin-dashboard.component').then(
+            (m) => m.AdminDashboardComponent
+            ),
+        children: [
+            { path: '', pathMatch: 'full', redirectTo: 'courses' },
+            {
+            path: 'courses',
+            loadComponent: () =>
+                import('./features/admin-courses/admin-courses.component').then(
+                (m) => m.AdminCoursesComponent
+                ),
+            },
+            {
+            path: 'enrollments',
+            loadComponent: () =>
+                import('./features/admin-enrollments/admin-enrollments.component').then(
+                (m) => m.AdminEnrollmentsComponent
+                ),
+            },
+        ],
+       canActivate: [roleGuard('Admin')]
     },
     {
     path: 'unauthorized',
     loadComponent: () =>
         import('./features/unauthorized/unauthorized.component')
         .then(m => m.UnauthorizedComponent),
+    },
+
+    {
+    path: 'student/profile',
+    loadComponent: () =>
+        import('./features/student-profile/student-profile.component')
+        .then(m => m.StudentProfileComponent),
     },
 
     { path: "", redirectTo: "register", pathMatch: "full" },

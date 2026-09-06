@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface TmsUser {
+  id: string;
   email: string;
   displayName: string;
   role: string;
@@ -50,12 +51,22 @@ export class AuthService {
     this.accessToken.set(res.accessToken);
 
     const payload = JSON.parse(atob(res.accessToken.split('.')[1]));
+    const id =
+      payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] ??
+      payload.sub ??
+      '';
+    const role =
+      payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ??
+      payload.role ??
+      'Student';
+    
     this.currentUser.set({
-        email: payload.email || payload.sub,
-        displayName: payload.name || 'User',
-        role: payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || payload.role || 'Student'
+        id: String(id),
+        email: payload.email ?? payload.sub ?? credentials.email,
+        displayName: payload.FirstName ?? payload.name ?? credentials.email,
+        role: Array.isArray(role) ? role[0] : String(role),
     });
- 
+  console.log('SESSION', this.getAccessToken()?.slice(0, 20), this.currentUser());
 }
 
     async register(payload: RegisterRequest): Promise<void> {
@@ -67,4 +78,38 @@ export class AuthService {
         this.accessToken.set(null);
         this.currentUser.set(null);
     }
+
+    private readRoleFromToken(accessToken: string): string {
+      const payload = JSON.parse(atob(accessToken.split('.')[1]));
+      const roleClaim =
+        payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ??
+        payload.role ??
+        payload.roles;
+
+      if (Array.isArray(roleClaim)) return String(roleClaim[0] ?? 'Student');
+      return String(roleClaim ?? 'Student');
+    }
+
+    dashboardUrlForRole(role: string): string {
+      switch (role) {
+        case 'Admin':
+          return 'admin/dashboard';
+        case 'Instructor':
+          return 'instructor/dashboard';
+        case 'Student':
+        default:
+          return 'student/dashboard';
+      }
+    }
+
+  private readUserIdFromToken(accessToken: string): string {
+  const payload = JSON.parse(atob(accessToken.split('.')[1]));
+  return (
+    payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/nameidentifier'] ??
+    payload.sub ??
+    payload.nameid ??
+    ''
+  );
+}
+    
 }

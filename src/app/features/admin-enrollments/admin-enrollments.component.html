@@ -1,0 +1,139 @@
+<div class="admin-enrollments space-y-6">
+  <div class="flex flex-wrap items-end justify-between gap-3">
+    <div>
+      <h2 class="text-2xl font-bold text-neutral">Enrollment records</h2>
+      <p class="text-sm opacity-60">
+        Approve pending requests · filter · sort · paginate
+      </p>
+    </div>
+    <div class="stats shadow-sm bg-white/60 backdrop-blur">
+      <div class="stat py-2 px-4">
+        <div class="stat-title text-xs">Total</div>
+        <div class="stat-value text-lg text-primary">{{ store.entities().length }}</div>
+      </div>
+      <div class="stat py-2 px-4">
+        <div class="stat-title text-xs">Pending</div>
+        <div class="stat-value text-lg text-secondary">{{ store.pendingCount() }}</div>
+      </div>
+    </div>
+  </div>
+
+  @if (actionMessage) {
+    <div class="alert alert-success text-sm py-2">{{ actionMessage }}</div>
+  }
+  @if (actionError) {
+    <div class="alert alert-error text-sm py-2">{{ actionError }}</div>
+  }
+  @if (store.error()) {
+    <div class="alert alert-error text-sm py-2">{{ store.error() }}</div>
+  }
+
+  <section
+    class="overflow-hidden rounded-3xl border border-white/50 bg-white/55 shadow-xl backdrop-blur-2xl"
+  >
+    <div class="flex flex-wrap items-center gap-3 border-b border-stone-200/60 p-4">
+      <mat-form-field appearance="outline" class="filter-field min-w-[220px] flex-1">
+        <mat-label>Filter</mat-label>
+        <input
+          matInput
+          [value]="filterText"
+          (input)="applyFilter($any($event.target).value)"
+          placeholder="Student, course, status…"
+        />
+      </mat-form-field>
+    </div>
+
+    @if (store.isLoading()) {
+      <div class="flex items-center justify-center gap-3 py-16">
+        <span class="loading loading-spinner loading-md text-primary"></span>
+        <span class="text-sm opacity-60">Loading enrollments…</span>
+      </div>
+    } @else {
+      <div class="overflow-x-auto">
+        <table mat-table [dataSource]="dataSource" matSort class="w-full enrollment-table">
+          <ng-container matColumnDef="studentName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Student</th>
+            <td mat-cell *matCellDef="let row">
+              <div class="font-medium">{{ row.studentName || '—' }}</div>
+              <div class="font-mono text-xs opacity-50">{{ row.studentId }}</div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="courseName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Course</th>
+            <td mat-cell *matCellDef="let row">
+              <div>{{ row.courseName || row.courseCode }}</div>
+              <div class="text-xs opacity-50">{{ row.courseCode }}</div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+            <td mat-cell *matCellDef="let row">
+              <span
+                class="badge badge-sm"
+                [class.badge-warning]="(row.status || 'Pending') === 'Pending'"
+                [class.badge-success]="row.status === 'Approved'"
+                [class.badge-error]="row.status === 'Rejected'"
+              >
+                {{ row.status || 'Pending' }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let row">
+              @if (!row.status || row.status === 'Pending') {
+                <button
+                  mat-stroked-button
+                  color="primary"
+                  type="button"
+                  (click)="approve(row.id)"
+                >
+                  Approve
+                </button>
+              } @else {
+                <span class="text-xs opacity-40">—</span>
+              }
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell py-10 text-center text-sm opacity-60" [attr.colspan]="displayedColumns.length">
+              No enrollment records
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <mat-paginator
+        class="paginator"
+        [pageSizeOptions]="[10, 25, 50]"
+        showFirstLastButtons
+      />
+    }
+  </section>
+
+  <!-- Delete by registration / student id -->
+  <section
+    class="rounded-3xl border border-white/50 bg-white/55 p-6 shadow-xl backdrop-blur-2xl"
+  >
+    <h3 class="text-lg font-semibold">Delete enrollment</h3>
+    <p class="mt-1 text-sm opacity-60">
+      By student registration number (e.g. TMS-2026-0001)
+    </p>
+    <div class="mt-4 flex flex-wrap gap-2">
+      <mat-form-field appearance="outline" class="min-w-[240px]">
+        <mat-label>Student id</mat-label>
+        <input matInput [(ngModel)]="deleteStudentId" placeholder="TMS-2026-0006" />
+      </mat-form-field>
+      <button mat-flat-button color="warn" type="button" (click)="deleteByStudentId()">
+        Delete
+      </button>
+    </div>
+  </section>
+</div>

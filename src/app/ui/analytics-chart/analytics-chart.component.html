@@ -1,15 +1,40 @@
-<div class="chart-container">
-  <h3>Enrollment Analytics</h3>
-  <div class="chart-bars">
-    <div class="bar approved" [style.height.px]="approvedHeight()">
-      <span>Approved</span>
+<div
+  class="rounded-3xl border border-white/50 bg-white/55 p-6 shadow-xl backdrop-blur-2xl sm:p-8"
+>
+  <div class="flex flex-wrap items-end justify-between gap-3">
+    <div>
+      <h3 class="text-lg font-semibold">Status breakdown</h3>
+      <p class="text-sm opacity-60">All enrollment records (read-only)</p>
     </div>
-    <div class="bar pending" [style.height.px]="pendingHeight()">
-      <span>Pending</span>
+    <p class="text-sm opacity-50">Total: {{ data().length }}</p>
+  </div>
+
+  <div class="mt-8 flex h-48 items-end justify-center gap-8 sm:gap-12">
+    <div class="flex flex-col items-center gap-2">
+      <span class="text-sm font-semibold text-primary">{{ approvedCount() }}</span>
+      <div
+        class="w-14 rounded-t-2xl bg-primary/90 shadow-lg shadow-primary/20 transition-all"
+        [style.height.px]="approvedHeight()"
+      ></div>
+      <span class="text-xs font-medium opacity-60">Approved</span>
     </div>
-    <div class="bar rejected" [style.height.px]="rejectedHeight()">
-      <span>Rejected</span>
+
+    <div class="flex flex-col items-center gap-2">
+      <span class="text-sm font-semibold text-secondary">{{ pendingCount() }}</span>
+      <div
+        class="w-14 rounded-t-2xl bg-secondary/90 shadow-lg shadow-secondary/20 transition-all"
+        [style.height.px]="pendingHeight()"
+      ></div>
+      <span class="text-xs font-medium opacity-60">Pending</span>
+    </div>
+
+    <div class="flex flex-col items-center gap-2">
+      <span class="text-sm font-semibold text-error">{{ rejectedCount() }}</span>
+      <div
+        class="w-14 rounded-t-2xl bg-error/80 shadow-lg transition-all"
+        [style.height.px]="rejectedHeight()"
+      ></div>
+      <span class="text-xs font-medium opacity-60">Rejected</span>
     </div>
   </div>
-  <p class="chart-summary">Total records: {{ data().length }}</p>
 </div>

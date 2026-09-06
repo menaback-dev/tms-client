@@ -1,18 +1,50 @@
-<div class="card">
-    <h3>
-        <a [routerLink]= "['/courses', course().id]"> {{ course().title }} </a> 
-        ({{ course().code}})
-    </h3>
-    <p>
-        Enrolled {{ course().enrollmentCount }} of {{ course().maxCapacity}} seats
-    </p>
-    <span class="badge" [class.closed]="course().enrollmentCount >= course().maxCapacity">
-        {{ course().enrollmentCount >= course().maxCapacity ? "Full" : "Accepting enrollments" }}
-    </span>
-    <button
-    (click)="enrollClicked.emit(course())"
-    [disabled]="course().enrollmentCount >= course().maxCapacity"
+<article
+  class="flex h-full flex-col rounded-3xl border border-white/50 bg-white/55 p-5 shadow-lg shadow-primary/5 backdrop-blur-xl transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/10"
+>
+  <div class="mb-3 flex items-start justify-between gap-2">
+    <span class="badge badge-ghost badge-sm font-mono">{{ course().code }}</span>
+
+    <span
+      class="badge badge-sm"
+      [class.badge-success]="course().enrollmentCount < course().maxCapacity"
+      [class.badge-warning]="course().enrollmentCount >= course().maxCapacity"
     >
-    Enroll
+      {{ course().enrollmentCount >= course().maxCapacity ? 'Full' : 'Open' }}
+    </span>
+  </div>
+
+  <h3 class="text-lg font-semibold leading-snug">
+    <a
+      class="link link-hover text-neutral"
+      [routerLink]="['/courses', course().id]"
+    >
+      {{ course().title }}
+    </a>
+  </h3>
+
+  <p class="mt-2 text-sm opacity-60">
+    Enrolled
+    <span class="font-medium text-neutral">{{ course().enrollmentCount }}</span>
+    of
+    <span class="font-medium text-neutral">{{ course().maxCapacity }}</span>
+    seats
+  </p>
+
+  <!-- capacity bar -->
+  <progress
+    class="progress progress-primary mt-4 h-2"
+    [value]="course().enrollmentCount"
+    [max]="course().maxCapacity"
+  ></progress>
+
+  <div class="mt-auto pt-5">
+    <button
+      type="button"
+      class="btn btn-primary btn-block btn-sm"
+      (click)="enrollClicked.emit(course())"
+      [disabled]="course().enrollmentCount >= course().maxCapacity"
+    >
+      {{ course().enrollmentCount >= course().maxCapacity ? 'Class full' : 'Enroll' }}
     </button>
-</div>
+  </div>
+</article>

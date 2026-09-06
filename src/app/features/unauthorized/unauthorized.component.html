@@ -1,0 +1,53 @@
+<div
+  class="relative flex min-h-screen items-center justify-center overflow-hidden bg-base-100 px-4 text-neutral"
+  data-theme="tms"
+>
+  <!-- background -->
+  <div
+    class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_rgba(5,150,105,0.18),_transparent_50%),radial-gradient(ellipse_at_bottom_right,_rgba(217,119,6,0.14),_transparent_45%)]"
+  ></div>
+  <div class="pointer-events-none absolute -left-16 top-24 h-72 w-72 rounded-full bg-primary/25 blur-3xl"></div>
+  <div class="pointer-events-none absolute -right-20 bottom-10 h-80 w-80 rounded-full bg-secondary/20 blur-3xl"></div>
+
+  <div
+    class="relative w-full max-w-md rounded-3xl border border-white/50 bg-white/55 p-8 text-center shadow-2xl shadow-primary/10 backdrop-blur-2xl sm:p-10"
+  >
+    <div
+      class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-secondary/15 text-2xl font-bold text-secondary"
+    >
+      403
+    </div>
+
+    <p class="mt-5 text-xs font-semibold uppercase tracking-widest text-secondary">
+      Access restricted
+    </p>
+
+    <h1 class="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
+      You don’t have permission
+    </h1>
+
+    <p class="mt-3 text-sm leading-relaxed opacity-70">
+      This area of the
+      <span class="font-medium text-neutral">Training Management System</span>
+      is limited to another role.
+      @if (role) {
+        You’re signed in as <span class="font-semibold text-primary">{{ role }}</span>.
+      } @else {
+        You may need to sign in with a different account.
+      }
+    </p>
+
+    <div class="mt-8 flex flex-col gap-2 sm:flex-row sm:justify-center">
+      <button type="button" class="btn btn-primary" (click)="goHome()">
+        Go to my dashboard
+      </button>
+      <a routerLink="/login" class="btn btn-ghost" (click)="logout()">
+        Sign in as someone else
+      </a>
+    </div>
+
+    <p class="mt-6 text-xs opacity-40">
+      TMS · If you believe this is a mistake, contact your administrator.
+    </p>
+  </div>
+</div>

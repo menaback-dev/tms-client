@@ -1,25 +1,142 @@
-<div class="dashboard-header">
-  <h1>Instructor Command Center</h1>
-  <div class="kpi-row">
-    <div class="kpi-card">
-      <span class="kpi-value">{{ store.entities().length }}</span>
-      <span class="kpi-label">Total Enrollments</span>
+<div class="relative min-h-screen overflow-hidden bg-base-100 text-neutral" data-theme="tms">
+  <div
+    class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_rgba(5,150,105,0.16),_transparent_50%),radial-gradient(ellipse_at_bottom_right,_rgba(217,119,6,0.10),_transparent_45%)]"
+  ></div>
+  <div class="pointer-events-none absolute -left-20 top-16 h-72 w-72 rounded-full bg-primary/20 blur-3xl"></div>
+
+  <!-- navbar -->
+  <div class="navbar relative z-10 border-b border-white/30 bg-base-100/70 px-4 backdrop-blur-xl sm:px-6">
+    <div class="flex-1 gap-3">
+      <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary text-sm font-bold text-primary-content shadow-lg shadow-primary/30">
+        TMS
+      </div>
+      <div>
+        <div class="text-sm font-semibold">Instructor Command Center</div>
+        <div class="text-xs opacity-60">{{ instructorName() }}</div>
+      </div>
     </div>
-    <div class="kpi-card pending">
-      <span class="kpi-value">{{ store.pendingCount() }}</span>
-      <span class="kpi-label">Pending Approval</span>
+    <div class="flex-none gap-2">
+      <button type="button" class="btn btn-ghost btn-sm" (click)="logout()">Sign out</button>
     </div>
   </div>
-</div>
 
-<div class="chart-section">
-  @defer (on viewport; prefetch on idle(500)) {
-    <tms-analytics-chart [data]="store.entities()" />
-  } @placeholder {
-    <div class="skeleton-chart">Scroll down to view analytics...</div>
-  } @loading (minimum 500ms) {
-    <div class="spinner">Downloading chart engine...</div>
-  } @error {
-    <p>Failed to load chart. Check your connection.</p>
-  }
+  <main class="relative z-10 mx-auto max-w-6xl space-y-8 px-4 py-8 sm:px-6">
+    <!-- header + KPIs -->
+    <section class="rounded-3xl border border-white/50 bg-white/55 p-6 shadow-xl backdrop-blur-2xl sm:p-8">
+      <p class="badge badge-secondary badge-outline mb-3">Instructor workspace</p>
+      <h1 class="text-3xl font-bold tracking-tight">Command Center</h1>
+      <p class="mt-2 text-sm opacity-60">
+        View analytics and students with <span class="font-medium text-primary">approved</span> enrollments.
+        Pending requests are handled by administrators.
+      </p>
+
+      <div class="mt-6 grid gap-4 sm:grid-cols-3">
+        <div class="rounded-2xl border border-white/40 bg-white/60 p-4 backdrop-blur">
+          <p class="text-xs font-medium uppercase tracking-wide opacity-50">Total records</p>
+          <p class="mt-1 text-3xl font-semibold">{{ store.entities().length }}</p>
+        </div>
+        <div class="rounded-2xl border border-white/40 bg-white/60 p-4 backdrop-blur">
+          <p class="text-xs font-medium uppercase tracking-wide opacity-50">Approved students</p>
+          <p class="mt-1 text-3xl font-semibold text-primary">{{ approvedCount() }}</p>
+        </div>
+        <div class="rounded-2xl border border-amber-200/50 bg-amber-50/50 p-4 backdrop-blur">
+          <p class="text-xs font-medium uppercase tracking-wide opacity-50">Pending (admin)</p>
+          <p class="mt-1 text-3xl font-semibold text-secondary">{{ store.pendingCount() }}</p>
+          <p class="mt-1 text-xs opacity-50">Visible for awareness only</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- approved roster -->
+    <section class="rounded-3xl border border-white/50 bg-white/55 p-6 shadow-xl backdrop-blur-2xl">
+      <div class="mb-4 flex items-center justify-between gap-3">
+        <div>
+          <h2 class="text-xl font-semibold">Approved enrollments</h2>
+          <p class="text-sm opacity-60">Students cleared to attend your courses</p>
+        </div>
+      </div>
+
+      @if (store.isLoading?.()) {
+        <div class="flex justify-center py-12">
+          <span class="loading loading-spinner loading-md text-primary"></span>
+        </div>
+      } @else {
+        <div class="overflow-x-auto">
+          <table class="table">
+            <thead>
+              <tr class="text-xs uppercase opacity-50">
+                <th>Student</th>
+                <th>Course</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (e of approvedEnrollments(); track e.id) {
+                <tr class="hover">
+                  <td>
+                    <div class="font-medium">{{ e.studentName || e.studentId }}</div>
+                    <div class="text-xs opacity-50 font-mono">{{ e.studentId }}</div>
+                  </td>
+                  <td>
+                    <div>{{ e.courseName || e.courseCode }}</div>
+                    <div class="text-xs opacity-50">{{ e.courseCode }}</div>
+                  </td>
+                  <td><span class="badge badge-success badge-sm">Approved</span></td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="3" class="py-10 text-center text-sm opacity-60">
+                    No approved enrollments yet.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+
+
+    <!-- Grade submission -->
+    <section>
+      <h2 class="mb-4 text-xl font-semibold">Midterm / final grading</h2>
+      <div class="grid gap-6 lg:grid-cols-2">
+        <tms-grade-submission />
+
+        <div
+          class="rounded-3xl border border-dashed border-stone-300/80 bg-white/40 p-6 text-sm opacity-70 backdrop-blur"
+        >
+          <p class="font-medium text-neutral opacity-100">Tips</p>
+          <ul class="mt-3 list-inside list-disc space-y-2">
+            <li>Use numeric student and course ids from the TMS database.</li>
+            <li>Only submit once per student/course; the form blocks double-clicks.</li>
+            <li>Pending enrollments are approved by <span class="font-medium">Admin</span>, not here.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- deferred chart -->
+    <section class="chart-section">
+      <h2 class="mb-4 text-xl font-semibold">Enrollment analytics</h2>
+
+      @defer (on viewport; prefetch on idle) {
+        <tms-analytics-chart [data]="store.entities()" />
+      } @placeholder {
+        <div
+          class="flex min-h-[250px] items-center justify-center rounded-3xl border border-dashed border-stone-300 bg-white/40 text-sm opacity-60 backdrop-blur"
+        >
+          Scroll to load analytics…
+        </div>
+      } @loading (minimum 400ms) {
+        <div class="flex min-h-[250px] items-center justify-center gap-3 rounded-3xl bg-white/50 backdrop-blur">
+          <span class="loading loading-spinner text-primary"></span>
+          <span class="text-sm opacity-60">Loading chart…</span>
+        </div>
+      } @error {
+        <div class="alert alert-error">Failed to load chart.</div>
+      }
+    </section>
+  </main>
 </div>

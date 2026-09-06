@@ -1,0 +1,29 @@
+.enrollment-table {
+  background: transparent;
+
+  .mat-mdc-header-cell {
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgb(0 0 0 / 45%);
+  }
+
+  .mat-mdc-row:hover {
+    background: rgb(5 150 105 / 6%);
+  }
+}
+
+.filter-field,
+.paginator {
+  background: transparent;
+}
+
+:host ::ng-deep {
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+
+  .mat-mdc-paginator {
+    background: transparent;
+  }
+}

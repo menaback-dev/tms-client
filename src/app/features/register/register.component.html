@@ -1,0 +1,46 @@
+<div class="relative min-h-screen overflow-hidden bg-base-100" data-theme="tms">
+  <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(5,150,105,0.2),_transparent_55%)]"></div>
+  <div class="pointer-events-none absolute right-0 top-32 h-72 w-72 rounded-full bg-secondary/20 blur-3xl"></div>
+
+    <tms-site-navbar />
+
+  <main class="relative mx-auto max-w-lg px-4 py-12">
+    <div class="mb-6 text-center">
+      <div class="badge badge-primary badge-outline mb-3">Get started</div>
+      <h1 class="text-3xl font-bold">Create your TMS account</h1>
+      <p class="mt-2 text-sm opacity-60">Students, instructors, and admins — one system.</p>
+    </div>
+
+    <form
+      class="space-y-4 rounded-3xl border border-white/50 bg-white/55 p-8 shadow-2xl backdrop-blur-2xl"
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+    >
+      <div class="grid gap-4 sm:grid-cols-2">
+        <input formControlName="firstName" placeholder="First name" class="input input-bordered w-full bg-white/70" />
+        <input formControlName="lastName" placeholder="Last name" class="input input-bordered w-full bg-white/70" />
+      </div>
+
+      <input type="email" formControlName="email" placeholder="Email" class="input input-bordered w-full bg-white/70" />
+      <input type="password" formControlName="password" placeholder="Password (12+ chars)" class="input input-bordered w-full bg-white/70" />
+
+      <select formControlName="role" class="select select-bordered w-full bg-white/70">
+        <option value="Student">Student</option>
+        <option value="Instructor">Instructor</option>
+        <option value="Admin">Admin</option>
+      </select>
+
+      @if (error()) { <div class="alert alert-error text-sm py-2">{{ error() }}</div> }
+      @if (success()) { <div class="alert alert-success text-sm py-2">{{ success() }}</div> }
+
+      <button type="submit" class="btn btn-primary w-full" [disabled]="form.invalid || isSubmitting()">
+        Create account
+      </button>
+
+      <p class="text-center text-sm opacity-70">
+        Already registered?
+        <a routerLink="/login" class="link link-secondary font-semibold">Sign in</a>
+      </p>
+    </form>
+  </main>
+</div>

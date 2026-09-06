@@ -1,3 +1,71 @@
-<h1>Course Detail</h1>
-<p>Course ID: {{ id() }}</p>
-<a routerLink="/dashboard">Back to Dashboard</a>
+<div class="relative min-h-screen overflow-hidden bg-base-100 text-neutral" data-theme="tms">
+  <div
+    class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_rgba(5,150,105,0.18),_transparent_50%),radial-gradient(ellipse_at_bottom_right,_rgba(217,119,6,0.12),_transparent_45%)]"
+  ></div>
+  <div class="pointer-events-none absolute -left-16 top-20 h-64 w-64 rounded-full bg-primary/20 blur-3xl"></div>
+
+  <!-- top bar -->
+  <div class="navbar relative z-10 border-b border-white/30 bg-base-100/70 px-4 backdrop-blur-xl sm:px-6">
+    <div class="flex-1">
+      <a routerLink="/student/dashboard" class="btn btn-ghost btn-sm">← Back to dashboard</a>
+    </div>
+    <div class="text-sm font-semibold opacity-70">Course detail</div>
+  </div>
+
+  <main class="relative z-10 mx-auto max-w-3xl px-4 py-8 sm:px-6">
+    @if (loading()) {
+      <div class="flex flex-col items-center justify-center gap-3 rounded-3xl border border-white/40 bg-white/50 py-20 backdrop-blur-xl">
+        <span class="loading loading-spinner loading-lg text-primary"></span>
+        <p class="text-sm opacity-60">Loading course…</p>
+      </div>
+    } @else if (error()) {
+      <div class="alert alert-error shadow-lg">
+        <span>{{ error() }}</span>
+      </div>
+      <a routerLink="/student/dashboard" class="btn btn-primary mt-4">Back to dashboard</a>
+    } @else if (course(); as c) {
+      <article class="rounded-3xl border border-white/50 bg-white/55 p-6 shadow-2xl backdrop-blur-2xl sm:p-8">
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <span class="badge badge-ghost font-mono">{{ c.code }}</span>
+          <span
+            class="badge"
+            [class.badge-success]="!isFull"
+            [class.badge-warning]="isFull"
+          >
+            {{ isFull ? 'Full' : 'Accepting enrollments' }}
+          </span>
+        </div>
+
+        <h1 class="mt-4 text-3xl font-bold tracking-tight">{{ c.title }}</h1>
+        <p class="mt-2 text-sm opacity-60">Course ID: {{ c.id }}</p>
+
+        <div class="mt-8 grid gap-4 sm:grid-cols-2">
+          <div class="rounded-2xl border border-white/40 bg-white/60 p-4 backdrop-blur">
+            <p class="text-xs font-medium uppercase tracking-wide opacity-50">Capacity</p>
+            <p class="mt-1 text-2xl font-semibold">
+              {{ c.enrollmentCount }}
+              <span class="text-base font-normal opacity-50">/ {{ c.maxCapacity }}</span>
+            </p>
+            <progress
+              class="progress progress-primary mt-3 h-2"
+              [value]="c.enrollmentCount"
+              [max]="c.maxCapacity"
+            ></progress>
+          </div>
+
+          <div class="rounded-2xl border border-white/40 bg-white/60 p-4 backdrop-blur">
+            <p class="text-xs font-medium uppercase tracking-wide opacity-50">Seats left</p>
+            <p class="mt-1 text-2xl font-semibold text-primary">
+              {{ seatsLeft(c) }}
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a routerLink="/student/dashboard" class="btn btn-primary">Back to catalog</a>
+          <a routerLink="/student/profile" class="btn btn-ghost">My profile</a>
+        </div>
+      </article>
+    }
+  </main>
+</div>

@@ -43,7 +43,7 @@ export const EnrollmentStore = signalStore(
             )
         ),
 
-        approveEnrollment: rxMethod<string>(
+        approveEnrollment: rxMethod<number>(
             pipe(
                 tap(id => {
                     patchState(store, updateEntity({ id, changes: { status: 'Approved' }}));  

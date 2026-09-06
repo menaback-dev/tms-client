@@ -1,0 +1,74 @@
+<div class="space-y-8">
+  <div>
+    <h1 class="text-2xl font-bold">Courses</h1>
+    <p class="text-sm opacity-60">Create, update titles, and browse the catalog</p>
+  </div>
+
+  @if (message()) {
+    <div class="alert alert-success text-sm">{{ message() }}</div>
+  }
+  @if (error()) {
+    <div class="alert alert-error text-sm">{{ error() }}</div>
+  }
+
+  <!-- Create -->
+  <section class="rounded-3xl border border-white/50 bg-white/55 p-6 shadow-xl backdrop-blur-2xl">
+    <h2 class="text-lg font-semibold">Create course</h2>
+    <form class="mt-4 grid gap-3 sm:grid-cols-3" [formGroup]="createForm" (ngSubmit)="createCourse()">
+      <input class="input input-bordered bg-white/70" placeholder="Code (e.g. CS-301)" formControlName="code" />
+      <input class="input input-bordered bg-white/70" placeholder="Title" formControlName="title" />
+      <input class="input input-bordered bg-white/70" type="number" placeholder="Max capacity" formControlName="maxCapacity" />
+      <button class="btn btn-primary sm:col-span-3" type="submit" [disabled]="createForm.invalid">Create</button>
+    </form>
+  </section>
+
+  <!-- Update title -->
+  <section class="rounded-3xl border border-white/50 bg-white/55 p-6 shadow-xl backdrop-blur-2xl">
+    <h2 class="text-lg font-semibold">Update course title</h2>
+    <form class="mt-4 grid gap-3 sm:grid-cols-3" [formGroup]="updateForm" (ngSubmit)="updateTitle()">
+      <input class="input input-bordered bg-white/70" type="number" placeholder="Course ID" formControlName="id" />
+      <input class="input input-bordered bg-white/70 sm:col-span-2" placeholder="New title" formControlName="title" />
+      <button class="btn btn-secondary sm:col-span-3" type="submit" [disabled]="updateForm.invalid">Update title</button>
+    </form>
+  </section>
+
+  <!-- List -->
+  <section class="rounded-3xl border border-white/50 bg-white/55 p-6 shadow-xl backdrop-blur-2xl">
+  <h2 class="mb-4 text-lg font-semibold">Course list</h2>
+
+  @if (loading()) {
+    <div class="flex justify-center py-10">
+      <span class="loading loading-spinner text-primary"></span>
+    </div>
+  } @else {
+    <div class="overflow-x-auto">
+      <table class="table">
+        <!-- same columns as before -->
+        <tbody>
+          @for (c of courses(); track c.id) {
+            <tr class="hover">
+              <td class="font-mono">{{ c.id }}</td>
+              <td>{{ c.code }}</td>
+              <td>{{ c.title }}</td>
+              <td>{{ c.maxCapacity }}</td>
+              <td>{{ c.enrollmentCount }}</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="5" class="py-8 text-center opacity-60">No courses</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <mat-paginator
+      class="mt-2 bg-transparent"
+      [length]="totalCount()"
+      [pageIndex]="pageIndex()"
+      [pageSize]="pageSize()"
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      (page)="onPage($event)"
+      showFirstLastButtons
+    />
+  }
+</section>
+</div>

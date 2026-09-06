@@ -1,0 +1,26 @@
+<div class="relative min-h-screen overflow-hidden bg-base-100 text-neutral" data-theme="tms">
+  <div
+    class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_rgba(5,150,105,0.16),_transparent_50%),radial-gradient(ellipse_at_bottom_right,_rgba(217,119,6,0.12),_transparent_45%)]"
+  ></div>
+
+  <div class="navbar relative z-10 border-b border-white/30 bg-base-100/70 px-4 backdrop-blur-xl sm:px-6">
+    <div class="flex-1 gap-3">
+      <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary text-sm font-bold text-primary-content">
+        TMS
+      </div>
+      <div>
+        <div class="text-sm font-semibold">Admin Console</div>
+        <div class="text-xs opacity-60">welcome, {{ name }}</div>
+      </div>
+    </div>
+    <div class="flex-none gap-2">
+      <a routerLink="/admin/dashboard/courses" routerLinkActive="btn-primary" class="btn btn-ghost btn-sm">Courses</a>
+      <a routerLink="/admin/dashboard/enrollments" routerLinkActive="btn-primary" class="btn btn-ghost btn-sm">Enrollments</a>
+      <button type="button" class="btn btn-ghost btn-sm" (click)="logout()">Sign out</button>
+    </div>
+  </div>
+
+  <main class="relative z-10 mx-auto max-w-6xl px-4 py-8 sm:px-6">
+    <router-outlet />
+  </main>
+</div>

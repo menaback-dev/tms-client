@@ -2,13 +2,13 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { SiteNavbarComponent } from '../../ui/site-navbar/site-navbar.component';
 
 @Component({
   selector: 'tms-login',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, SiteNavbarComponent],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.scss',
 })
 export class LoginComponent {
   private fb = inject(FormBuilder);
@@ -35,7 +35,10 @@ export class LoginComponent {
         email: this.form.controls.email.value,
         password: this.form.controls.password.value,
       });
-      await this.router.navigateByUrl('/dashboard');
+      const role = this.auth.currentUser()?.role ?? 'Student';
+      const url = this.auth.dashboardUrlForRole(role);
+      console.log('after login token', this.auth.getAccessToken());
+      await this.router.navigateByUrl(url);
     } catch {
       this.error.set('Invalid email or password.');
     } finally {
