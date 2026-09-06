@@ -1,59 +1,202 @@
-# TmsClient
+# TMS Client (Angular)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.0.8.
+Training Management System — browser application for **Students**, **Instructors**, and **Admins**.
 
-## Development server
+This SPA talks to the ASP.NET Core TMS API (JWT authentication, courses, enrollments, grades).
 
-To start a local development server, run:
+---
+
+## Stack
+
+| Layer | Choice |
+|--------|--------|
+| Framework | Angular 22 (standalone components) |
+| Styling | Tailwind CSS + daisyUI (glass UI) |
+| State | NgRx SignalStore (enrollments) |
+| HTTP | `HttpClient` + JWT / error interceptors |
+| Tables | Angular Material (`MatTable`, `MatPaginator`, `MatSort`) |
+| Tests | Vitest (unit) · Playwright (E2E) |
+| Realtime | SignalR client (enrollment status), when API hub is available |
+
+**Design tokens**
+
+| Token | Value |
+|--------|--------|
+| Primary | `#059669` (Emerald-600) |
+| Surface | `#FEFCE8` (Yellow-50) |
+| Ink | `#292524` (Stone-800) |
+| Accent | `#D97706` (Amber-600) |
+| Font | Poppins |
+
+---
+
+## Screenshots
+
+Place PNG files under `docs/screenshots/`. GitHub will render them on this README.
+
+| Page | File | Preview |
+|------|------|---------|
+| Login | `docs/screenshots/login.png` | ![Login](docs/screenshots/login.png) |
+| Register | `docs/screenshots/register.png` | ![Register](docs/screenshots/register.png) |
+| Student dashboard | `docs/screenshots/student-dashboard.png` | ![Student dashboard](docs/screenshots/student-dashboard.png) |
+| Student profile | `docs/screenshots/student-profile.png` | ![Student profile](docs/screenshots/student-profile.png) |
+| Course detail | `docs/screenshots/course-detail.png` | ![Course detail](docs/screenshots/course-detail.png) |
+| Instructor command center | `docs/screenshots/instructor-dashboard.png` | ![Instructor dashboard](docs/screenshots/instructor-dashboard.png) |
+| Admin courses | `docs/screenshots/admin-courses.png` | ![Admin courses](docs/screenshots/admin-courses.png) |
+| Admin enrollments | `docs/screenshots/admin-enrollments.png` | ![Admin enrollments](docs/screenshots/admin-enrollments.png) |
+| Unauthorized (403) | `docs/screenshots/unauthorized.png` | ![Unauthorized](docs/screenshots/unauthorized.png) |
+
+
+---
+
+## Features by role
+
+### Student
+
+- Register / login (email + password)
+- Automatic student registration number `TMS-2026-00xx` (from API register response)
+- Course catalog and enrollment **request** (status **Pending**)
+- Profile: registration number and own enrollments
+- Course detail page
+
+### Instructor
+
+- Command Center KPIs and deferred analytics chart (`@defer`)
+- Roster of **Approved** enrollments only (no approve/reject)
+- Grade submission form (RxJS `exhaustMap` to block double-submit)
+
+### Admin
+
+- **Courses:** create (code, title, max capacity), update title by id, paginated list
+- **Enrollments:** Material table with filter / sort / paginate, **Approve** pending rows, delete by student registration number
+
+---
+
+## Prerequisites
+
+- Node.js **20+**
+- npm
+- Running TMS API (default `http://localhost:5013`)
+
+---
+
+## Setup
+
+```bash
+npm install
+```
+
+### Dev proxy
+
+`proxy.conf.json` should forward `/api` (and `/hubs` if using SignalR) to the API, for example:
+
+```json
+{
+  "/api": {
+    "target": "http://localhost:5013",
+    "secure": false,
+    "changeOrigin": true
+  }
+}
+```
+
+Ensure `angular.json` → `serve.options.proxyConfig` points at `proxy.conf.json`.
+
+### Environment
+
+Example `src/environments/environment.development.ts`:
+
+```typescript
+export const environment = {
+  production: false,
+  apiUrl: '/api',
+};
+```
+
+Use a full host (`http://localhost:5013/api`) only if you are not using the proxy; then CORS must allow `http://localhost:4200`.
+
+---
+
+## Run
 
 ```bash
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Open [http://localhost:4200](http://localhost:4200).
 
-## Code scaffolding
+Restart `ng serve` after changing proxy or Tailwind config.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+---
 
-```bash
-ng generate component component-name
-```
+## Main routes
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+| Path | Description |
+|------|-------------|
+| `/login` | Sign in |
+| `/register` | Create account |
+| `/student/dashboard` | Student home + catalog |
+| `/student/profile` | Registration number + enrollments |
+| `/courses/:id` | Course detail |
+| `/instructor/dashboard` | Instructor command center + grades |
+| `/admin/dashboard/courses` | Admin courses |
+| `/admin/dashboard/enrollments` | Admin enrollments |
+| `/unauthorized` | Wrong role / forbidden |
 
-```bash
-ng generate --help
-```
+After login, navigation is **role-based** (`Student` → student dashboard, `Instructor` → instructor dashboard, `Admin` → admin dashboard).
 
-## Building
+---
 
-To build the project run:
+## Authentication notes
 
-```bash
-ng build
-```
+- `POST /api/auth/login` returns `{ accessToken, refreshToken }`
+- Access token is held in memory via `AuthService`
+- JWT interceptor attaches `Authorization: Bearer <token>`
+- Claims used: name identifier (user id), email, role
+- Student enroll body uses `sessionStorage` key `tms_student_id` (value like `TMS-2026-0006` from register), not email
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+---
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+## Tests
 
 ```bash
-ng e2e
+# Unit tests (Vitest)
+npm test
+
+# E2E (Playwright)
+# Set credentials for auth setup, e.g. PowerShell:
+# $env:TMS_ADMIN_EMAIL="admin@example.com"
+# $env:TMS_ADMIN_PASS="YourPassword123!"
+npx playwright test
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Do **not** commit `playwright/.auth/` (session storage state).
 
-## Additional Resources
+---
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## Project structure (high level)
+
+```text
+src/app/
+  features/       login, register, student-*, instructor-*, admin-*, course-detail, unauthorized, grade-submission
+  ui/             course-card, analytics-chart, navbar, …
+  services/       auth, course, enrollment, grade, …
+  store/          enrollment.store (SignalStore)
+  guards/         role / auth guards
+  interceptors/   jwt, error, …
+  models/
+docs/
+  screenshots/    README page images
+```
+
+---
+
+## Related repository
+
+Backend API: **TmsApi** (ASP.NET Core 10 + PostgreSQL + Identity + JWT).
+
+---
+
+## License
+
+Private / coursework — update as appropriate for your institution.
