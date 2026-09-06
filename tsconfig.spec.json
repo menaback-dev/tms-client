@@ -5,11 +5,11 @@
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
     "types": [
-      "vitest/globals"
+      "vitest/globals", "node"
     ]
   },
   "include": [
     "src/**/*.d.ts",
     "src/**/*.spec.ts"
-  ]
+, "e2e/admin-approve-enrollment.spec.ts"  ]
 }

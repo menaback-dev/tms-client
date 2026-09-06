@@ -3,11 +3,13 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "types": []
+    "types": [
+      "node"
+    ]
   },
   "include": [
     "src/**/*.ts"
-  ],
+, "e2e/admin-approve-enrollment.spec.ts", "e2e/auth.setup.ts"  ],
   "exclude": [
     "src/**/*.spec.ts"
   ]
