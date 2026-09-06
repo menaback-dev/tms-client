@@ -1,57 +1,36 @@
-# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+# Dependencies
+node_modules/
 
-# Compiled output
+# Build / Angular cache
 /dist
 /tmp
 /out-tsc
-/bazel-out
+/.angular
 
-# Node
-/node_modules
-npm-debug.log
-yarn-error.log
+# Environment secrets
+.env
+.env.*
+!.env.example
 
-# IDEs and editors
+# Logs & test output
+npm-debug.log*
+yarn-error.log*
+coverage/
+.nyc_output/
+
+# Playwright
+/playwright-report/
+/test-results/
+/playwright/.auth/
+
+# IDE / OS
 .idea/
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
-
-# Visual Studio Code
 .vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
 !.vscode/extensions.json
-!.vscode/mcp.json
-.history/*
-
-# Miscellaneous
-/.angular/cache
-.sass-cache/
-/connect.lock
-/coverage
-/libpeerconnection.log
-testem.log
-/typings
-__screenshots__/
-
-# System files
+!.vscode/settings.json
+*.swp
 .DS_Store
 Thumbs.db
 
-# Playwright
-node_modules/
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
-/playwright/.auth/
-
-bin/
-obj/
-*.Development.json 
-*.json
+# Optional local overrides
+*.local.json
